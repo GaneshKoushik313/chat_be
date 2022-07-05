@@ -1,10 +1,6 @@
 module.exports =
 {
-    output: {
-        path: path.join(__dirname, '..', 'dist'),
-        publicPath: '/',
-        libraryTarget: "commonjs2"
-    },
+    entry: './src/server.js',
     target: 'node',
     externals: {
         express: 'express',
