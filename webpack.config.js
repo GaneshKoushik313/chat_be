@@ -1,13 +1,12 @@
 module.exports =
 {
+    output: {
+        path: path.join(__dirname, '..', 'dist'),
+        publicPath: '/',
+        libraryTarget: "commonjs2"
+    },
     target: 'node',
-    externals: [
-        { 'express': 
-            { commonjs: 'express' } 
-        },
-        {
-            'utf-8-validate': 'commonjs utf-8-validate',
-            bufferutil: 'commonjs bufferutil',
-        }
-    ],
+    externals: {
+        express: 'express',
+    },
 }
