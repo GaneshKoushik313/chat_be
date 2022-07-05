@@ -1,4 +1,4 @@
-const express = require("express")
+const express = __non_webpack_require__('express');
 const http = require("http")
 const app = express()
 const server = http.createServer(app)
