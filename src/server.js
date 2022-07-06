@@ -10,6 +10,7 @@ const io = require("socket.io")(server, {
 })
 app.get('/', (req, res) => {
     res.send('Socket.io Running')
+	res.sendFile(path.join(__dirname, '/index.html'));
 })
 io.on("connection", (socket) => {
 	console.log("Client Connected")
