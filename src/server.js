@@ -6,7 +6,9 @@ const router = express.Router();
 const io = require("socket.io")(server, {
 	cors: {
 		origin: window.location.origin,
-		methods: [ "GET", "POST" ]
+		methods: [ "GET", "POST" ],
+		allowedHeaders:["secretHeader"],
+  		credentials: true
 	}
 })
 app.use('/.netlify/functions/server', router);  // path must route to lambda
