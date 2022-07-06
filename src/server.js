@@ -5,7 +5,7 @@ const server = http.createServer(app)
 const router = express.Router();
 const io = require("socket.io")(server, {
 	cors: {
-		origin: 'https://user-login-e2e23.web.app/',
+		origin: process.env.NODE_ENV === 'production' ? 'https://user-login-e2e23.web.app/' : 'http://localhost:3000/',
 		methods: [ "GET", "POST" ]
 	}
 })
