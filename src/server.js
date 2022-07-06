@@ -5,11 +5,10 @@ const server = http.createServer(app)
 const router = express.Router();
 const io = require("socket.io")(server, {
 	cors: {
-		origin: process.env.NODE_ENV === 'production' ? 'https://user-login-e2e23.web.app/' : 'http://localhost:3000/',
+		origin: 'https://user-login-e2e23.web.app/',
 		methods: [ "GET", "POST" ]
 	}
 })
-app.use('/.netlify/functions/server', router);  // path must route to lambda
 app.get('/', (req, res) => {
     res.send('Socket.io Running')
 	res.sendFile(path.join(__dirname, '/index.html'));
