@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require("http")
 const app = express()
-const serverless = require('serverless-http');
 const server = http.createServer(app)
 const router = express.Router();
 const io = require("socket.io")(server, {
@@ -39,6 +38,3 @@ io.on("connection", (socket) => {
 })
 
 server.listen(5000, () => console.log("server is running on port 5000"))
-
-module.exports = app;
-module.exports.handler = serverless(app);
