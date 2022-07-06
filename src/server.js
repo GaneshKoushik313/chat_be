@@ -5,7 +5,7 @@ const server = http.createServer(app)
 const router = express.Router();
 const io = require("socket.io")(server, {
 	cors: {
-		origin: "http://localhost:3000",
+		origin: window.location.origin,
 		methods: [ "GET", "POST" ]
 	}
 })
