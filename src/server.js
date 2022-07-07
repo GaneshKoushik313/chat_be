@@ -31,6 +31,9 @@ io.on("connection", (socket) => {
 	socket.on("answerCall", (data) => {
 		io.to(data.to).emit("callAccepted", data.signal)
 	})
+	socket.on("rejectCall", (data) => {
+		io.to(data.to).emit("callRejected", data.signal)
+	})
 	socket.on("leaveCall", (data) => {
 		io.to(data.to).emit("callEnded", data.signal)
 	})
