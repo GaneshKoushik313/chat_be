@@ -5,7 +5,7 @@ const server = http.createServer(app)
 const router = express.Router();
 const io = require("socket.io")(server, {
 	cors: {
-		origin: process.env.NODE_ENV === 'production' ? 'video-messenger-4fd26.web.app/' : 'http://localhost:3000/',
+		origin: process.env.NODE_ENV === 'production' ? 'https://video-messenger-4fd26.web.app/' : 'http://localhost:3000/',
 		methods: [ "GET", "POST" ]
 	}
 })
