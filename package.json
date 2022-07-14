@@ -10,6 +10,7 @@
         "heroku-cli": "^7.0.9",
         "javascript-build-essentials": "^1.0.0",
         "nodemon": "^2.0.18",
+        "peer": "^0.6.1",
         "request": "^2.79.0",
         "save": "^2.5.0",
         "simple-peer": "^9.11.1",

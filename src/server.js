@@ -5,7 +5,7 @@ const server = http.createServer(app)
 const router = express.Router();
 const io = require("socket.io")(server, {
 	cors: {
-		origin: process.env.NODE_ENV === 'production' ? 'https://user-login-e2e23.web.app/' : 'http://localhost:3000/',
+		origin: process.env.NODE_ENV === 'production' ? 'video-messenger-4fd26.web.app/' : 'http://localhost:3000/',
 		methods: [ "GET", "POST" ]
 	}
 })
@@ -14,29 +14,40 @@ app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '/index.html'));
 })
 io.on("connection", (socket) => {
-	console.log("Client Connected")
-	setInterval(() => {
-		socket.emit("me", socket.id)
-	}, 1000);
+	socket.on("join-media", (ID) => {
+		console.log(ID,"Connected")
+    	socket.join(ID);
 
-	socket.on("disconnect", () => {
-		socket.broadcast.emit("callEnded")
-		console.log("Client Disconnected")
-	})
+		socket.on("end-call", (ID) => {
+			socket.to(ID).emit("call-ended");
+		});
 
-	socket.on("callUser", (data) => {
-		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
-	})
+		socket.on("call-user", (Info, ID) => {
+			io.to(ID).emit("incoming-call", Info);
+			console.log("incoming-call")
+		});
+		socket.on("busy", (ID) => {
+			io.to(ID).emit("user-busy");
+		});
 
-	socket.on("answerCall", (data) => {
-		io.to(data.to).emit("callAccepted", data.signal)
-	})
-	socket.on("rejectCall", (data) => {
-		io.to(data.to).emit("callRejected", data.signal)
-	})
-	socket.on("leaveCall", (data) => {
-		io.to(data.to).emit("callEnded", data.signal)
-	})
+		socket.on("call-rejected", (ID) => {
+			io.to(ID).emit("call--rejected");
+		});
+
+		socket.on("call-attended", (Info, ID) => {
+			io.to(ID).emit("call--attended", Info);
+		});
+
+		socket.on("user-info", (Info, ID) => {
+			io.to(ID).emit("user--info", Info);
+		});
+		socket.on("switch-cam", (camera, userID) => {
+			io.to(ID).emit("switch-camera", camera, userID);
+		});
+		socket.on("disconnect", () => {
+			socket.emit("user-disconnected", ID);
+		});
+  	});
 })
 
 server.listen(process.env.PORT || 5000, () => console.log("server is running on port 5000"))
