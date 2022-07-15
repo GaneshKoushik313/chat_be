@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require("http")
-const path = require("path")
+// const path = require("path")
 const app = express()
 const server = http.createServer(app)
 const router = express.Router();
@@ -12,7 +12,7 @@ const io = require("socket.io")(server, {
 })
 app.get('/', (req, res) => {
     res.send('Socket.io Running')
-	res.sendFile(path.join(__dirname, '/index.html'));
+	// res.sendFile(path.join(__dirname, '/index.html'));
 })
 io.on("connection", (socket) => {
 	socket.on("join-media", (ID) => {
