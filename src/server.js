@@ -17,7 +17,6 @@ app.get('/', (req, res) => {
 
 const io = new ws.Server({
 	server,
-	path: '/websocket-path',
 	cors: {
 		origin: "*",
 	}
