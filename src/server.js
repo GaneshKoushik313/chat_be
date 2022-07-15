@@ -1,52 +1,68 @@
-const express = require('express');
-const path = require("path")
-const app = express()
+const express = require("express");
+const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
 	cors: {
 		origin: "*",
-	}
-})
-app.use(express.static(path.join(__dirname)));
-
-app.get("/", (request, response) => {
-    response.sendFile(__dirname + "/index.html");
+	},
 });
-io.on("connection", (socket) => {
+const PORT = process.env.PORT || 5000;
+
+app.get("/", (req, res) => {
+	res.send("Welcome to Video Call.");
+});
+
+//Video NameSpace
+const VideosNsp = io.of("/");
+
+//Chat NameSpace
+const ChatsNsp = io.of("/chats");
+
+VideosNsp.on("connection", (socket) => {
 	socket.on("join-media", (ID) => {
-		console.log(ID,"Connected")
-    	socket.join(ID);
+		socket.join(ID);
 
 		socket.on("end-call", (ID) => {
-			socket.to(ID).emit("call-ended");
+			socket.to(ID).broadcast.emit("call-ended");
 		});
 
 		socket.on("call-user", (Info, ID) => {
-			io.to(ID).emit("incoming-call", Info);
-			console.log("incoming-call")
+			socket.to(ID).broadcast.emit("incoming-call", Info);
 		});
 		socket.on("busy", (ID) => {
-			io.to(ID).emit("user-busy");
+			socket.to(ID).broadcast.emit("user-busy");
 		});
 
 		socket.on("call-rejected", (ID) => {
-			io.to(ID).emit("call--rejected");
+			socket.to(ID).broadcast.emit("call--rejected");
 		});
 
 		socket.on("call-attended", (Info, ID) => {
-			io.to(ID).emit("call--attended", Info);
+			socket.to(ID).broadcast.emit("call--attended", Info);
 		});
 
 		socket.on("user-info", (Info, ID) => {
-			io.to(ID).emit("user--info", Info);
+			socket.to(ID).broadcast.emit("user--info", Info);
 		});
 		socket.on("switch-cam", (camera, userID) => {
-			io.to(ID).emit("switch-camera", camera, userID);
+			VideosNsp.to(ID).emit("switch-camera", camera, userID);
 		});
 		socket.on("disconnect", () => {
-			socket.emit("user-disconnected", ID);
+			VideosNsp.emit("user-disconnected", ID);
 		});
-  	});
-})
+	});
+});
 
-server.listen(process.env.PORT || 5000, () => console.log("server is running on port 5000"))
+ChatsNsp.on("connection", (socket) => {
+	socket.on("join-chat", (ID) => {
+		socket.join(ID);
+		socket.on("chat-message", (msg, ID) => {
+			socket.to(ID).broadcast.emit("chat-msg", msg);
+		});
+	});
+});
+
+server.listen(PORT, function (err) {
+	if (err) console.log(err);
+	console.log("Server listening on PORT", PORT);
+});
