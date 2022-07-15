@@ -1,28 +1,18 @@
-const { createServer } = require('http')
-const ws = require('ws')
-const express = require('express')
-// const io = require("socket.io")(server, {
-// 	cors: {
-// 		origin: "*",
-// 	}
-// })
-
+const express = require('express');
+const path = require("path")
 const app = express()
-
-const server = createServer(app)
-
-app.get('/', (req, res) => {
-  res.send('I am a normal http server response')
-})
-
-const io = new ws.Server({
-	server,
+const server = require("http").Server(app);
+const io = require("socket.io")(server, {
 	cors: {
 		origin: "*",
 	}
 })
+app.use(express.static(path.join(__dirname)));
 
-io.on('connection', (socket) => {
+app.get("/", (request, response) => {
+    response.sendFile(__dirname + "/index.html");
+});
+io.on("connection", (socket) => {
 	socket.on("join-media", (ID) => {
 		console.log(ID,"Connected")
     	socket.join(ID);
@@ -59,7 +49,4 @@ io.on('connection', (socket) => {
   	});
 })
 
-server.listen(process.env.PORT || 5000, () => {
-  console.log(`Server is now running on http://localhost:5000`)
-  console.log(`Websocket is now running on ws://localhost:5000/<websocket-path>`)
-})
+server.listen(process.env.PORT || 5000, () => console.log("server is running on port 5000"))
