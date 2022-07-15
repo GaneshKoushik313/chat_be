@@ -4,7 +4,8 @@ const app = express()
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
 	cors: {
-		origin: "*",
+		origin: process.env.NODE_ENV === 'production' ? 'https://video-messenger-4fd26.web.app/' : 'http://localhost:3000/',
+		methods: ["GET"]
 	}
 })
 app.use(express.static(path.join(__dirname)));
