@@ -1,19 +1,17 @@
 const express = require('express');
-const http = require("http")
-// const path = require("path")
+const path = require("path")
 const app = express()
-const server = http.createServer(app)
-const router = express.Router();
+const server = require("http").Server(app);
 const io = require("socket.io")(server, {
 	cors: {
-		origin: process.env.NODE_ENV === 'production' ? 'https://video-messenger-4fd26.web.app/' : 'http://localhost:3000/',
-		methods: [ "GET", "POST" ]
+		origin: "*",
 	}
 })
-app.get('/', (req, res) => {
-    res.send('Socket.io Running')
-	// res.sendFile(path.join(__dirname, '/index.html'));
-})
+app.use(express.static(path.join(__dirname)));
+
+app.get("/", (request, response) => {
+    response.sendFile(__dirname + "/index.html");
+});
 io.on("connection", (socket) => {
 	socket.on("join-media", (ID) => {
 		console.log(ID,"Connected")
