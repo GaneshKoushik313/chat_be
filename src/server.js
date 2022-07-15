@@ -1,68 +1,25 @@
-const express = require("express");
-const app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server, {
-	cors: {
-		origin: "*",
-	},
-});
-const PORT = process.env.PORT || 5000;
+const { createServer } = require('http')
+const ws = require('ws')
+const express = require('express')
 
-app.get("/", (req, res) => {
-	res.send("Welcome to Video Call.");
-});
+const app = express()
 
-//Video NameSpace
-const VideosNsp = io.of("/");
+const server = createServer(app)
 
-//Chat NameSpace
-const ChatsNsp = io.of("/chats");
+app.get('/', (req, res) => {
+  res.send('I am a normal http server response')
+})
 
-VideosNsp.on("connection", (socket) => {
-	socket.on("join-media", (ID) => {
-		socket.join(ID);
+const wsServer = new ws.Server({
+  server,
+  path: '/websocket-path',
+})
 
-		socket.on("end-call", (ID) => {
-			socket.to(ID).broadcast.emit("call-ended");
-		});
+wsServer.on('connection', (connection) => {
+  connection.send('I am a websocket response')
+})
 
-		socket.on("call-user", (Info, ID) => {
-			socket.to(ID).broadcast.emit("incoming-call", Info);
-		});
-		socket.on("busy", (ID) => {
-			socket.to(ID).broadcast.emit("user-busy");
-		});
-
-		socket.on("call-rejected", (ID) => {
-			socket.to(ID).broadcast.emit("call--rejected");
-		});
-
-		socket.on("call-attended", (Info, ID) => {
-			socket.to(ID).broadcast.emit("call--attended", Info);
-		});
-
-		socket.on("user-info", (Info, ID) => {
-			socket.to(ID).broadcast.emit("user--info", Info);
-		});
-		socket.on("switch-cam", (camera, userID) => {
-			VideosNsp.to(ID).emit("switch-camera", camera, userID);
-		});
-		socket.on("disconnect", () => {
-			VideosNsp.emit("user-disconnected", ID);
-		});
-	});
-});
-
-ChatsNsp.on("connection", (socket) => {
-	socket.on("join-chat", (ID) => {
-		socket.join(ID);
-		socket.on("chat-message", (msg, ID) => {
-			socket.to(ID).broadcast.emit("chat-msg", msg);
-		});
-	});
-});
-
-server.listen(PORT, function (err) {
-	if (err) console.log(err);
-	console.log("Server listening on PORT", PORT);
-});
+server.listen(5000, () => {
+  console.log(`Server is now running on http://localhost:5000`)
+  console.log(`Websocket is now running on ws://localhost:5000/<websocket-path>`)
+})
